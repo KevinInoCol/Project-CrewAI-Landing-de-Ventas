@@ -1,0 +1,23 @@
+[project]
+name = "frontend_streamlit_landingpage"
+version = "0.1.0"
+description = "frontend-streamlit-landingpage using crewAI"
+authors = [{ name = "Your Name", email = "you@example.com" }]
+requires-python = ">=3.10,<3.13"
+dependencies = [
+    "crewai[tools]>=0.102.0,<1.0.0"
+]
+
+[project.scripts]
+frontend_streamlit_landingpage = "frontend_streamlit_landingpage.main:run"
+run_crew = "frontend_streamlit_landingpage.main:run"
+train = "frontend_streamlit_landingpage.main:train"
+replay = "frontend_streamlit_landingpage.main:replay"
+test = "frontend_streamlit_landingpage.main:test"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.crewai]
+type = "crew"

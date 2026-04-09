@@ -1,0 +1,13 @@
+crewai
+crewai-tools
+langchain-openai
+fastapi
+uvicorn[standard]
+python-dotenv
+duckduckgo-search
+heyoo
+pygsheets
+pandas
+
+#Instalación de duckduckgo
+ddgs

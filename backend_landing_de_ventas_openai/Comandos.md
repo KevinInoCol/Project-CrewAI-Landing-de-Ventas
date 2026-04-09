@@ -1,0 +1,1 @@
+uvicorn src.backend_fastapi_landingpage.main:app --host 127.0.0.1 --port 8005

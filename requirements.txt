@@ -1,0 +1,8 @@
+crewai==1.14.0
+crewai-tools
+fastapi
+uvicorn[standard]
+python-dotenv
+duckduckgo-search==8.1.1
+heyoo
+pygsheets
