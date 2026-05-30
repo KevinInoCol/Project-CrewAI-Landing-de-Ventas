@@ -1,19 +1,25 @@
 [project]
-name = "frontend_streamlit_landingpage"
+name = "backend_landing_de_ventas_openai"
 version = "0.1.0"
-description = "frontend-streamlit-landingpage using crewAI"
+description = "backend_landing_de_ventas_openai using crewAI (variante OpenAI)"
 authors = [{ name = "Your Name", email = "you@example.com" }]
-requires-python = ">=3.10,<3.13"
+requires-python = ">=3.10,<3.14"
 dependencies = [
-    "crewai[tools]>=0.102.0,<1.0.0"
+    "crewai[tools]==1.14.0",
+    "fastapi>=0.115.0",
+    "uvicorn>=0.30.0",
+    "python-dotenv>=1.0.0",
+    "duckduckgo-search>=6.0.0",
+    "heyoo>=0.0.8",
+    "pygsheets>=2.0.6",
 ]
 
 [project.scripts]
-frontend_streamlit_landingpage = "frontend_streamlit_landingpage.main:run"
-run_crew = "frontend_streamlit_landingpage.main:run"
-train = "frontend_streamlit_landingpage.main:train"
-replay = "frontend_streamlit_landingpage.main:replay"
-test = "frontend_streamlit_landingpage.main:test"
+backend_landing_de_ventas_openai = "backend_landing_de_ventas_openai.main:run"
+run_crew = "backend_landing_de_ventas_openai.main:run"
+train = "backend_landing_de_ventas_openai.main:train"
+replay = "backend_landing_de_ventas_openai.main:replay"
+test = "backend_landing_de_ventas_openai.main:test"
 
 [build-system]
 requires = ["hatchling"]

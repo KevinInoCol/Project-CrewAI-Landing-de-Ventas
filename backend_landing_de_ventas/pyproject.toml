@@ -5,7 +5,14 @@ description = "backend_landing_de_ventas using crewAI"
 authors = [{ name = "Your Name", email = "you@example.com" }]
 requires-python = ">=3.10,<3.14"
 dependencies = [
-    "crewai[tools]==1.14.0"
+    "crewai[tools]==1.14.0",
+    "fastapi>=0.115.0",
+    "uvicorn>=0.30.0",
+    "python-dotenv>=1.0.0",
+    "duckduckgo-search>=6.0.0",
+    "heyoo>=0.0.8",
+    "pygsheets>=2.0.6",
+    "ollama>=0.3.0",
 ]
 
 [project.scripts]

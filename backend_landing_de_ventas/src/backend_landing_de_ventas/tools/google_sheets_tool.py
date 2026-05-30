@@ -24,8 +24,11 @@ class GoogleSheetsTool(BaseTool):
     def _run(self, nombre: str, apellido: str, correo: str, codigo_pais: str, numero_celular: str, programas: str) -> str:
         try:
             sheet_id = os.getenv("GOOGLE_SHEET_ID")
-            sheet_name = "Interesados"
-            service_account_path = 'mlops-14-project-deploy-fast-00098d8180ed.json'
+            sheet_name = os.getenv("GOOGLE_SHEET_NAME", "Interesados")
+            service_account_path = os.getenv("GOOGLE_SERVICE_ACCOUNT_FILE")
+
+            if not service_account_path:
+                return "Error: La variable de entorno 'GOOGLE_SERVICE_ACCOUNT_FILE' no está definida en el .env."
 
             if not os.path.exists(service_account_path):
                 return f"Error: El archivo de cuenta de servicio '{service_account_path}' no fue encontrado."

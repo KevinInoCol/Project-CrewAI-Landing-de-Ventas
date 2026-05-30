@@ -7,6 +7,7 @@
 # src/backend_fastapi_landingpage/crew.py
 
 import os
+import glob
 from dotenv import load_dotenv
 
 # ============================================
@@ -42,12 +43,22 @@ from crewai import LLM
 # ============================================
 # Herramientas custom creadas específicamente para este proyecto:
 # - EmailTool: Envía emails de bienvenida a los leads
-# - WhatsAppTool: Notifica al equipo de ventas por WhatsApp
+# - TelegramTool: Notifica al equipo de ventas por Telegram
 # - GoogleSheetsTool: Registra leads en Google Sheets para seguimiento
 from .tools.email_tool import EmailTool
-from .tools.whatsapp_tool import WhatsAppTool
+from .tools.telegram_tool import TelegramTool
 from .tools.google_sheets_tool import GoogleSheetsTool
 from .tools.internet_search_tool import InternetSearchTool
+
+# ============================================
+# FUENTES DE CONOCIMIENTO (KNOWLEDGE / RAG)
+# ============================================
+# CrewAI puede cargar archivos (txt, pdf, etc.), generar embeddings y guardarlos
+# en una base vectorial local (ChromaDB) para que los agentes consulten contexto.
+# - TextFileKnowledgeSource: para archivos .txt (catálogo de programas)
+# - PDFKnowledgeSource: para PDFs (ej. preguntas frecuentes sobre Datapath)
+from crewai.knowledge.source.text_file_knowledge_source import TextFileKnowledgeSource
+from crewai.knowledge.source.pdf_knowledge_source import PDFKnowledgeSource
 
 # ============================================
 # DECORADOR @CrewBase
@@ -93,10 +104,12 @@ class LeadProcessingCrew():
         # - model: ollama/llama3.1 (modelo local de 8B parámetros)
         # - base_url: http://localhost:11434 (servidor local de Ollama)
         # - temperature: 0.7 (balance entre creatividad y consistencia)
+        # temperature=0 → respuestas deterministas. Reduce que el modelo "alucine"
+        # llamadas a herramientas (problema común de modelos pequeños locales).
         self.llm = LLM(
             model=os.getenv("MODEL", "ollama/llama3.1"),
             base_url=os.getenv("API_BASE", "http://localhost:11434"),
-            temperature=0.7
+            temperature=0
         )
         
         # ============================================
@@ -116,13 +129,48 @@ class LeadProcessingCrew():
         # EmailTool: Herramienta custom para enviar emails via SMTP o servicio de email
         self.email_tool = EmailTool()
         
-        # WhatsAppTool: Herramienta custom para enviar mensajes de WhatsApp
-        # (usando WhatsApp Business API o servicio como Twilio)
-        self.whatsapp_tool = WhatsAppTool()
+        # TelegramTool: Herramienta custom para enviar mensajes de Telegram
+        # (usando la API de bots de Telegram)
+        self.telegram_tool = TelegramTool()
         
         # GoogleSheetsTool: Herramienta custom para escribir en Google Sheets
         # (usando Google Sheets API para registrar leads)
         self.gsheets_tool = GoogleSheetsTool()
+
+        # ============================================
+        # FUENTES DE CONOCIMIENTO (KNOWLEDGE)
+        # ============================================
+        # Los archivos se buscan dentro de la carpeta 'knowledge/' del proyecto.
+        # CrewAI espera las rutas RELATIVAS a esa carpeta (solo el nombre del archivo).
+        self.knowledge_sources = [
+            # Catálogo de programas (lo usa el comunicador para describir el curso)
+            TextFileKnowledgeSource(file_paths=["programas_datapath.txt"]),
+        ]
+
+        # Cargamos automáticamente cualquier PDF que coloques en knowledge/
+        # (por ejemplo, las preguntas frecuentes sobre Datapath).
+        knowledge_dir = os.path.join(os.getcwd(), "knowledge")
+        pdf_files = [
+            os.path.basename(p) for p in glob.glob(os.path.join(knowledge_dir, "*.pdf"))
+        ]
+        if pdf_files:
+            self.knowledge_sources.append(PDFKnowledgeSource(file_paths=pdf_files))
+
+        # ============================================
+        # EMBEDDER LOCAL (OLLAMA)
+        # ============================================
+        # Por defecto CrewAI usa embeddings de OpenAI. Como trabajamos 100% local,
+        # usamos el modelo de embeddings 'nomic-embed-text' servido por Ollama.
+        # Requisito previo: haber ejecutado 'ollama pull nomic-embed-text'.
+        # OJO: la clave debe ser 'model_name' (no 'model'); CrewAI valida la config
+        # contra un TypedDict y descarta cualquier clave que no reconozca.
+        self.embedder = {
+            "provider": "ollama",
+            "config": {
+                "model_name": "nomic-embed-text",
+                "url": f"{os.getenv('API_BASE', 'http://localhost:11434')}/api/embeddings",
+            },
+        }
 
     # ============================================
     # DEFINICIÓN DE AGENTES (AGENTS) EN CREWAI
@@ -158,9 +206,10 @@ class LeadProcessingCrew():
             # llm: El modelo de lenguaje que usará este agente para "pensar"
             llm=self.llm,
 
-            # max_iter: Limita las iteraciones del agente para evitar
-            # que llame a la herramienta de email múltiples veces
-            max_iter=2,
+            # max_iter: Damos margen suficiente para que el agente complete el ciclo
+            # de razonamiento + llamada real a la herramienta de email + respuesta final.
+            # (Con 2 era demasiado bajo y podía cortar antes de ejecutar la tool.)
+            max_iter=5,
 
             # verbose: Si es True, imprime los pasos de razonamiento del agente
             # Útil para debugging y entender cómo el agente toma decisiones
@@ -187,10 +236,10 @@ class LeadProcessingCrew():
             config=self.agents_config['coordinador_ventas'],
             
             # tools: Este agente tiene acceso a DOS herramientas:
-            # 1. WhatsAppTool: Para notificar al equipo de ventas
+            # 1. TelegramTool: Para notificar al equipo de ventas
             # 2. GoogleSheetsTool: Para registrar los leads en la hoja de cálculo
             # Nota: Puede usar ambas herramientas en la misma tarea
-            tools=[self.whatsapp_tool, self.gsheets_tool],
+            tools=[self.telegram_tool, self.gsheets_tool],
             
             # llm: El cerebro del agente (mismo modelo que los otros agentes)
             llm=self.llm,
@@ -283,18 +332,18 @@ class LeadProcessingCrew():
         )
 
     @task
-    def notificar_ventas_whatsapp(self) -> Task:
+    def notificar_ventas_telegram(self) -> Task:
         """
-        TAREA 4: Notificación al equipo de ventas por WhatsApp
+        TAREA 4: Notificación al equipo de ventas por Telegram
 
         Esta tarea se encarga de:
-        - Enviar un mensaje de WhatsApp al asesor de ventas con los datos del lead
+        - Enviar un mensaje de Telegram al asesor de ventas con los datos del lead
         """
         return Task(
-            config=self.tasks_config['notificar_ventas_whatsapp'],
+            config=self.tasks_config['notificar_ventas_telegram'],
             agent=self.coordinador_ventas(),
-            # tools: Solo WhatsApp para esta tarea
-            tools=[self.whatsapp_tool],
+            # tools: Solo Telegram para esta tarea
+            tools=[self.telegram_tool],
             context=[self.enriquecer_perfil_lead()]
         )
 
@@ -348,9 +397,15 @@ class LeadProcessingCrew():
                 self.enriquecer_perfil_lead(),       # 1º: Investigar y enriquecer
                 self.enviar_email_bienvenida(),      # 2º: Enviar email al lead
                 self.registrar_lead_en_sheets(),     # 3º: Registrar en Google Sheets
-                self.notificar_ventas_whatsapp()     # 4º: Notificar por WhatsApp
+                self.notificar_ventas_telegram()     # 4º: Notificar por Telegram
             ],
 
             process=Process.sequential,
-            verbose=True
+            verbose=True,
+
+            # knowledge_sources: archivos que los agentes pueden consultar (RAG)
+            knowledge_sources=self.knowledge_sources,
+
+            # embedder: modelo de embeddings local (Ollama) para la base vectorial
+            embedder=self.embedder,
         )

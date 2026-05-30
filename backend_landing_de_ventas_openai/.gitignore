@@ -1,3 +1,7 @@
 .env
 __pycache__/
 .DS_Store
+
+# Credenciales de cuenta de servicio de Google (NUNCA subir a git)
+*.json
+ai-engineer-*.json

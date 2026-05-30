@@ -5,14 +5,20 @@ enviar_email_bienvenida:
     - Email del Lead: {correo_electronico}
     - Programa de Interés: El primer programa de la lista '{programas_interes}'.
     
+    REGLA OBLIGATORIA: DEBES usar la herramienta de email para enviar el correo.
+    NO está permitido afirmar que el correo fue enviado sin haber ejecutado la herramienta.
+    Solo puedes darlo por enviado si la herramienta devuelve una confirmación de éxito.
+
     Pasos:
     1. Redacta un mensaje de bienvenida amigable para {nombre}.
-    2. Incluye en el cuerpo del correo un breve resumen del programa '{programas_interes}'. 
-       Para 'n8n Básico', menciona que es un curso para aprender a crear automatizaciones sin código, 
-       conectando aplicaciones como Google Sheets, Slack y Trello. Destaca que no se necesita experiencia previa.
+    2. Incluye en el cuerpo del correo un breve resumen del programa '{programas_interes}'.
+       Para describirlo, CONSULTA tu base de conocimiento (catálogo de programas de Datapath)
+       y usa la información oficial de ese programa. No inventes datos que no estén ahí.
     3. Envía el correo usando la herramienta de email. NO intentes adjuntar ningún archivo por ahora.
+    4. Devuelve como respuesta final el texto EXACTO que devolvió la herramienta de email.
   expected_output: >
-    Confirmación de que el correo de texto con la información del curso fue enviado exitosamente a {correo_electronico}.
+    El texto EXACTO devuelto por la herramienta de email, confirmando que el correo
+    fue enviado a {correo_electronico}.
   agent: comunicador_cliente
 
 
@@ -20,25 +26,42 @@ registrar_lead_en_sheets:
   description: >
     Tarea: Registrar al lead en Google Sheets.
 
+    REGLA OBLIGATORIA: DEBES usar la herramienta de Google Sheets para registrar el lead.
+    NO está permitido afirmar que se registró sin haber ejecutado la herramienta.
+    Solo puedes darlo por registrado si la herramienta devuelve una confirmación de éxito.
+
     Pasos:
-    1. Registra los siguientes datos en la hoja de cálculo de Google Sheets:
+    1. Llama a la herramienta de Google Sheets con los siguientes datos:
        Nombre: {nombre}, Apellido: {apellido}, Correo: {correo_electronico}, Código de país: {pais}, Número de Celular: {numero_celular}, Programas: {programas_interes}.
+    2. Devuelve como respuesta final el texto EXACTO que devolvió la herramienta.
   expected_output: >
-    Confirmación de que el lead fue registrado en Google Sheets. Ejemplo: "Lead registrado en Google Sheets exitosamente."
+    El texto EXACTO devuelto por la herramienta de Google Sheets confirmando el registro.
   agent: coordinador_ventas
   context:
     - enriquecer_perfil_lead
 
 
-notificar_ventas_whatsapp:
+notificar_ventas_telegram:
   description: >
-    Tarea: Notificar al asesor de ventas por WhatsApp.
+    Tarea: Notificar al asesor de ventas por Telegram.
+
+    REGLA OBLIGATORIA: DEBES usar la herramienta "Enviar Mensaje de Telegram".
+    NO está permitido afirmar que el mensaje fue enviado sin haber ejecutado la herramienta.
+    Está PROHIBIDO inventar o suponer el resultado. Solo puedes dar por enviada la
+    notificación si la herramienta DEVUELVE una confirmación que empiece con
+    "Mensaje de Telegram enviado exitosamente".
 
     Pasos:
-    1. Envía un mensaje de WhatsApp al asesor de ventas al número '{numero_asesor_ventas}'. El mensaje debe incluir:
+    1. Llama a la herramienta "Enviar Mensaje de Telegram" con el parámetro 'mensaje'
+       conteniendo exactamente estos datos del lead:
        Nombre: {nombre} {apellido}, Celular: {numero_celular}, Email: {correo_electronico}, Programa(s): {programas_interes}.
+       NO pases el parámetro 'chat_id' (la herramienta usa el chat configurado por defecto).
+    2. Lee el texto que devolvió la herramienta.
+    3. Si empieza con "Mensaje de Telegram enviado exitosamente", devuélvelo tal cual como respuesta final.
+       Si devolvió un error, reporta ese error exacto; NO digas que se envió.
   expected_output: >
-    Confirmación de que la notificación fue enviada por WhatsApp. Ejemplo: "Notificación enviada a WhatsApp exitosamente."
+    El texto EXACTO devuelto por la herramienta de Telegram. Debe empezar con
+    "Mensaje de Telegram enviado exitosamente" si todo salió bien.
   agent: coordinador_ventas
   context:
     - enriquecer_perfil_lead
@@ -56,5 +79,5 @@ enriquecer_perfil_lead:
     
     El resultado de esta tarea será utilizado por otros agentes.
   expected_output: >
-    Un breve párrafo con el contexto profesional del lead, que se pasará a la tarea de notificación por WhatsApp.
+    Un breve párrafo con el contexto profesional del lead, que se pasará a la tarea de notificación por Telegram.
   agent: investigador_enriquecimiento

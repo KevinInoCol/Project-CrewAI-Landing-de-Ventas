@@ -1,0 +1,63 @@
+CATÁLOGO DE PROGRAMAS DE DATAPATH
+=================================
+NOTA INTERNA: Estas descripciones fueron redactadas como borrador. Revisa y
+ajusta los detalles oficiales (duración, precio, requisitos, certificación)
+antes de usarlas en producción.
+
+
+PROGRAMA: AI Engineer
+---------------------
+Resumen: Programa orientado a formar ingenieros capaces de construir aplicaciones
+con Inteligencia Artificial y agentes autónomos de principio a fin. Cubre el uso
+de modelos de lenguaje (LLMs), frameworks de orquestación de agentes (como CrewAI
+y LangChain), RAG (recuperación aumentada con bases vectoriales), integración de
+herramientas externas y despliegue de soluciones de IA en producción.
+Dirigido a: Desarrolladores, analistas de datos y profesionales técnicos que
+quieren especializarse en la construcción de productos con IA.
+Requisitos: Conocimientos básicos de programación (idealmente Python).
+Resultado: Capacidad de diseñar, construir y desplegar agentes y aplicaciones de IA.
+
+
+PROGRAMA: n8n Básico
+--------------------
+Resumen: Curso para aprender a crear automatizaciones sin código, conectando
+aplicaciones como Google Sheets, Slack y Trello. No se necesita experiencia previa.
+Dirigido a: Personas que quieren empezar a automatizar tareas y flujos de trabajo
+sin programar.
+Requisitos: Ninguno. Pensado para principiantes.
+Resultado: Capacidad de construir automatizaciones simples que conecten varias
+aplicaciones entre sí.
+
+
+PROGRAMA: n8n Avanzado
+----------------------
+Resumen: Profundiza en automatizaciones complejas con n8n: manejo de lógica
+condicional, bucles, nodos de código personalizado (JavaScript), conexión con APIs
+mediante HTTP requests, webhooks, manejo de errores y orquestación de flujos de
+varios pasos. Incluye buenas prácticas para automatizaciones robustas y escalables.
+Dirigido a: Quienes ya conocen lo básico de n8n y quieren construir automatizaciones
+profesionales y de mayor complejidad.
+Requisitos: Manejo básico de n8n (equivalente a 'n8n Básico').
+Resultado: Capacidad de diseñar flujos de automatización avanzados y mantenibles.
+
+
+PROGRAMA: Make Básico
+---------------------
+Resumen: Introducción a Make (antes Integromat), plataforma visual de automatización
+sin código. Aprende a crear escenarios que conecten aplicaciones populares, mapear
+datos entre módulos y programar ejecuciones automáticas. No requiere experiencia previa.
+Dirigido a: Personas que quieren automatizar procesos usando Make desde cero.
+Requisitos: Ninguno. Pensado para principiantes.
+Resultado: Capacidad de crear escenarios de automatización básicos en Make.
+
+
+PROGRAMA: Make Avanzado
+-----------------------
+Resumen: Lleva tus automatizaciones en Make al siguiente nivel: routers y filtros
+avanzados, iteradores y agregadores, manejo de errores, integración con APIs y
+webhooks, y optimización del consumo de operaciones. Enfocado en escenarios
+empresariales complejos.
+Dirigido a: Usuarios con base en Make que buscan construir automatizaciones
+avanzadas y eficientes.
+Requisitos: Manejo básico de Make (equivalente a 'Make Básico').
+Resultado: Capacidad de diseñar automatizaciones complejas y optimizadas en Make.

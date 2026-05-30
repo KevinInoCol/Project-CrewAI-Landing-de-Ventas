@@ -1,13 +1,27 @@
-conda activate CrewAI-Landing-de-Ventas
+# Para ejecutar el Backend:
+uv sync
+
+## Comando para desplegar localmente el de OpenAI:
+uv run uvicorn src.backend_landing_de_ventas.main:app --host 0.0.0.0 --port 8005 --reload
+
+uv run uvicorn src.backend_landing_de_ventas_openai.main:app --host 0.0.0.0 --port 8006 --reload
+
+# Para ejecutar el Frontend:
+conda create -n CrewAI-Landing-Ventas-Frontend python=3.11
+conda activate CrewAI-Landing-Ventas-Frontend
+pip install -r requirements.txt
+streamlit run app.py
+
+
 
 crewai create crew backend_landing_de_ventas
 
 474.1 GB
 480.35 GB
 
-uvicorn src.backend_landing_de_ventas.main:app --host 0.0.0.0 --port 8005 --reload
 
-uvicorn src.backend_landing_de_ventas_openai.main:app --host 0.0.0.0 --port 8005
+
+
 
 
 (CrewAI-Landing-de-Ventas) kevininofuente@MacBook-Pro-de-Kevin Proyecto-No-Conversacional-LandingPage-de-Ventas-Ollama % crewai create crew backend_landing_de_ventas

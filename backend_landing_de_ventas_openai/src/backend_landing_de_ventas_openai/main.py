@@ -3,7 +3,10 @@ from pydantic import BaseModel
 from typing import List
 from starlette.responses import JSONResponse
 import os
+from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
+
+load_dotenv()
 
 from .crew import LeadProcessingCrew
 
@@ -55,7 +58,6 @@ async def process_lead_endpoint(request: LeadRequest):
             'correo_electronico': request.correo_electronico,
             'numero_celular': request.numero_celular,
             'programas_interes': programas_str,
-            'numero_asesor_ventas': os.getenv('SALES_WHATSAPP_NUMBER')
         }
         
         print(f"🚀 Procesando nuevo lead con los siguientes datos: {inputs}")

@@ -11,7 +11,7 @@ comunicador_cliente:
 coordinador_ventas:
   role: 'Coordinador de Operaciones de Ventas'
   goal: >
-    Notificar al equipo de ventas sobre un nuevo lead de alta calidad a través de WhatsApp para un seguimiento 
+    Notificar al equipo de ventas sobre un nuevo lead de alta calidad a través de Telegram para un seguimiento
     inmediato y registrar toda la información del lead en la base de datos de Google Sheets para un registro centralizado.
   backstory: >
     El puente entre marketing y ventas. Su misión es garantizar que los datos fluyan sin problemas, que los asesores 
